@@ -8,8 +8,8 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "creator")
-class Creator(
-    id: Long?,
+open class CreatorEntity(
+    id: Long? = null,
     name: String,
     email: String,
     password: String,

@@ -15,16 +15,16 @@ class Course(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long?,
 
-    name: String,
+    @Column(name = "name")
+    val name: String,
 
-    price: Double,
-
+    @Column(name = "price")
+    val price: Double,
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
-    val creator: Creator,
+    val creator: CreatorEntity,
 
-    // Relationship with Customers (Many customers can buy one course)
     @ManyToMany
     @JoinTable(
         name = "customer_course",
@@ -32,7 +32,6 @@ class Course(
         inverseJoinColumns = [JoinColumn(name = "customer_id")]
     )
     val customers: List<Customer> = emptyList(),
-
 
     @CreationTimestamp
     @Column(name = "created_date", updatable = false)
