@@ -20,12 +20,12 @@ data class CustomerDTO(
     @field:Email(message = "Email should be valid")
     val email: String,
 
-    @field:NotBlank(message = "Password cannot be blank")
-    @field:Size(min = 8, message = "Password must be at least 8 characters long")
-    val password: String,
+//    @field:NotBlank(message = "Password cannot be blank")
+//    @field:Size(min = 8, message = "Password must be at least 8 characters long")
+//    val password: String,
 
-    @field:NotNull(message = "Role cannot be null")
-    val role: Role,
+//    @field:NotNull(message = "Role cannot be null")
+//    val role: Role,
 
     @field:NotEmpty(message = "Courses list cannot be empty")
     val courses: List<CourseDTO> // List of simplified course DTOs

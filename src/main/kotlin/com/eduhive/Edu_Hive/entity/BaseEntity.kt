@@ -21,7 +21,7 @@ open class BaseEntity(
     val email: String,
 
     @Column(name = "password")
-    val password: String,
+    var password: String,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")

@@ -6,6 +6,6 @@ import com.eduhive.Edu_Hive.dto.SignUpDto
 
 interface CreatorService {
 
-    fun save(creator: SignUpDto): CreatorDto
+    fun save(creator: CreatorDto): CreatorDto
     fun getAllCreators(): List<CreatorDto>
 }
