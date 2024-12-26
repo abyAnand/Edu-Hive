@@ -12,8 +12,12 @@ data class CourseDTO(
     val id: Long?,
 
     @field:NotBlank(message = "Name cannot be blank")
-    @field:Size(max = 200, message = "Name cannot exceed 200 characters")
-    val name: String,
+    @field:Size(max = 50, message = "Name cannot exceed 50 characters")
+    val title: String,
+
+    @field:NotBlank(message = "Description cannot be blank")
+    @field:Size(max = 300, message = "Name cannot exceed 300 characters")
+    val description: String,
 
     @field:NotNull(message = "Price cannot be null")
     @field:Positive(message = "Price must be a positive value")

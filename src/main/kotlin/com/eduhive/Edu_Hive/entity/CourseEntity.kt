@@ -1,6 +1,5 @@
 package com.eduhive.Edu_Hive.entity
 
-import com.eduhive.Edu_Hive.enums.Role
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -9,14 +8,17 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "course")
-class Course(
+class CourseEntity(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long?,
 
-    @Column(name = "name")
-    val name: String,
+    @Column(name = "title")
+    val title: String,
+
+    @Column(name = "description")
+    val description: String,
 
     @Column(name = "price")
     val price: Double,

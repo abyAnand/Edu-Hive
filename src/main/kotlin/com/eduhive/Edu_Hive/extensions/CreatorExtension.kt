@@ -1,7 +1,9 @@
 package com.eduhive.Edu_Hive.extensions
 
-import com.eduhive.Edu_Hive.dto.CreateCreatorDto
+
 import com.eduhive.Edu_Hive.dto.CreatorDto
+
+import com.eduhive.Edu_Hive.dto.SignUpDto
 import com.eduhive.Edu_Hive.entity.CreatorEntity
 
 fun CreatorDto.toCreatorEntity(creator: CreatorEntity) =
@@ -14,19 +16,21 @@ fun CreatorDto.toCreatorEntity(creator: CreatorEntity) =
         courses = creator.courses
     )
 
-fun CreateCreatorDto.toCreatorEntity() =
+fun SignUpDto.toCreatorEntity() =
     CreatorEntity(
-        name = this.name ?: throw IllegalArgumentException("Name cannot be null"),
+        name = this.email?.substringBefore('@') ?: throw IllegalArgumentException("Email cannot be null"),
         email = this.email ?: throw IllegalArgumentException("Email cannot be null"),
         password = this.password ?: throw IllegalArgumentException("Password cannot be null"),
-        role = this.role ?: throw IllegalArgumentException("Role cannot be null")
-    )
+        role = this.role ?: throw IllegalArgumentException("Invalid role: $role")
+
+)
+
 
 fun CreatorEntity.toCreatorDto() =
     CreatorDto(
         id = this.id,
         name = this.name,
         email = this.email,
-        role = this.role
-//        courses = this.courses
+        role = this.role,
+        courses = this.courses.map { it.toCourseDTO()}
     )

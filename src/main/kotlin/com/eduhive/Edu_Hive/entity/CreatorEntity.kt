@@ -17,5 +17,5 @@ open class CreatorEntity(
 
 
     @OneToMany(mappedBy = "creator")
-    val courses: List<Course> = emptyList()
+    val courses: List<CourseEntity> = emptyList()
 ) : BaseEntity(id, name, email, password, role)
