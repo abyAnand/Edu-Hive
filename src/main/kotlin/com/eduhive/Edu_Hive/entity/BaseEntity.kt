@@ -11,7 +11,7 @@ open class BaseEntity(
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @Column(name = "name")

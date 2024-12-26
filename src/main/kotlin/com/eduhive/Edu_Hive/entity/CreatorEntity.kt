@@ -8,8 +8,8 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "creator")
-class Creator(
-    id: Long?,
+open class CreatorEntity(
+    id: Long? = null,
     name: String,
     email: String,
     password: String,
@@ -17,5 +17,5 @@ class Creator(
 
 
     @OneToMany(mappedBy = "creator")
-    val courses: List<Course> = emptyList()
+    val courses: List<CourseEntity> = emptyList()
 ) : BaseEntity(id, name, email, password, role)

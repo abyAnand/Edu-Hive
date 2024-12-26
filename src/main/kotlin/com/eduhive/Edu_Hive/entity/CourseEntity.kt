@@ -1,6 +1,5 @@
 package com.eduhive.Edu_Hive.entity
 
-import com.eduhive.Edu_Hive.enums.Role
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -9,22 +8,25 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "course")
-class Course(
+class CourseEntity(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long?,
 
-    name: String,
+    @Column(name = "title")
+    val title: String,
 
-    price: Double,
+    @Column(name = "description")
+    val description: String,
 
+    @Column(name = "price")
+    val price: Double,
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
-    val creator: Creator,
+    val creator: CreatorEntity,
 
-    // Relationship with Customers (Many customers can buy one course)
     @ManyToMany
     @JoinTable(
         name = "customer_course",
@@ -32,7 +34,6 @@ class Course(
         inverseJoinColumns = [JoinColumn(name = "customer_id")]
     )
     val customers: List<Customer> = emptyList(),
-
 
     @CreationTimestamp
     @Column(name = "created_date", updatable = false)
