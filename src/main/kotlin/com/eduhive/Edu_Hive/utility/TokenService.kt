@@ -18,7 +18,7 @@ class TokenService(
             return SecretKeySpec(keyBytes, 0, keyBytes.size, "HmacSHA256")
         }
 
-    fun generateToken(subject: String, expiration: Date, additionalClaims: Map<String, Any> = emptyMap()): String {
+    fun generateToken(subject: String, expiration: Date, additionalClaims: Map<String, Any>): String {
         return Jwts.builder()
             .setClaims(additionalClaims)
             .setSubject(subject)
@@ -31,6 +31,8 @@ class TokenService(
     fun extractUsername(token: String): String {
         return extractAllClaims(token).subject
     }
+
+
 
     private fun extractAllClaims(token: String): Claims {
         return Jwts.parserBuilder()

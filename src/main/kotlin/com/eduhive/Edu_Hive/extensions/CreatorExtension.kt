@@ -42,6 +42,7 @@ fun CreatorEntity.toCreatorDto() =
         id = this.id,
         name = this.name,
         email = this.email,
+        courses = emptyList()
 //        role = this.role,
-        courses = this.courses.map { it.toCourseDTO()}
+//        courses = this.courses.map { it.toCourseDTO()}
     )

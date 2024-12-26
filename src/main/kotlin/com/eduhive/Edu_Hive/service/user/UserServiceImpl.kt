@@ -3,6 +3,7 @@ package com.eduhive.Edu_Hive.service.user
 import com.eduhive.Edu_Hive.dto.SignUpDto
 import com.eduhive.Edu_Hive.entity.BaseEntity
 import com.eduhive.Edu_Hive.entity.CreatorEntity
+import com.eduhive.Edu_Hive.entity.UserEntity
 import com.eduhive.Edu_Hive.enums.Role
 import com.eduhive.Edu_Hive.extensions.*
 import com.eduhive.Edu_Hive.repository.CreatorRepository
@@ -60,5 +61,9 @@ class UserServiceImpl(
 //            else -> throw IllegalArgumentException("Unsupported role: ${savedUserEntity.role}")
 //        }
 
+    }
+
+    override fun getAllUsres(): List<UserEntity> {
+        return userRepository.findAll()
     }
 }

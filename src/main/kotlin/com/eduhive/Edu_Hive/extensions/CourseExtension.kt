@@ -15,6 +15,16 @@ fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity, customerEntities: Lis
         customers = customerEntities
     )
 
+fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity): CourseEntity =
+    CourseEntity(
+        id = null,
+        title = this.title,
+        description = this.description,
+        price = this.price,
+        creator = creatorEntity,
+        customers = emptyList()
+    )
+
 fun CourseDTO.toCourseEntity(courseEntity: CourseEntity): CourseEntity =
     CourseEntity(
         id = courseEntity.id,

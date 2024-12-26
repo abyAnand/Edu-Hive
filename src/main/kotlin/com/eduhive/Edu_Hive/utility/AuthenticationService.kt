@@ -2,6 +2,7 @@ package com.eduhive.Edu_Hive.utility
 
 import com.eduhive.Edu_Hive.dto.AuthenticationResponse
 import com.eduhive.Edu_Hive.dto.LoginDto
+import com.eduhive.Edu_Hive.entity.UserEntity
 import com.eduhive.Edu_Hive.repository.RefreshTokenRepository
 import com.eduhive.Edu_Hive.service.userDetails.UserDetailsService
 import org.springframework.beans.factory.annotation.Value
@@ -58,14 +59,24 @@ class AuthenticationService(
     }
 
     private fun createAccessToken(user: UserDetails): String {
+        val claims = mutableMapOf<String, Any>()
+        claims["authorities"] = user.authorities
         return tokenService.generateToken(
             subject = user.username,
-            expiration = Date(System.currentTimeMillis() + accessTokenExpiration)
+            expiration = Date(System.currentTimeMillis() + accessTokenExpiration),
+            additionalClaims = claims
+
         )
     }
 
-    private fun createRefreshToken(user: UserDetails) = tokenService.generateToken(
-        subject = user.username,
-        expiration = Date(System.currentTimeMillis() + refreshTokenExpiration)
-    )
+    private fun createRefreshToken(user: UserDetails) : String {
+        val claims = mutableMapOf<String, Any>()
+        claims["authorities"] = user.authorities
+        return tokenService.generateToken(
+            subject = user.username,
+            expiration = Date(System.currentTimeMillis() + refreshTokenExpiration),
+            additionalClaims = claims
+        )
+
+    }
 }
