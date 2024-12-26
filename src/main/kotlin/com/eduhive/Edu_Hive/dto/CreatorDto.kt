@@ -19,8 +19,8 @@ data class CreatorDto(
     @field:Email(message = "Email should be valid")
     val email: String,
 
-    @field:NotNull(message = "Role cannot be null")
-    val role: Role,
+//    @field:NotNull(message = "Role cannot be null")
+//    val role: Role,
 
     val courses: List<CourseDTO>? = null
 )

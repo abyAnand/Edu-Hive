@@ -33,7 +33,7 @@ class CourseEntity(
         joinColumns = [JoinColumn(name = "course_id")],
         inverseJoinColumns = [JoinColumn(name = "customer_id")]
     )
-    val customers: List<Customer> = emptyList(),
+    val customers: List<CustomerEntity> = emptyList(),
 
     @CreationTimestamp
     @Column(name = "created_date", updatable = false)

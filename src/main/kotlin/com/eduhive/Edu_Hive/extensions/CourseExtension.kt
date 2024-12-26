@@ -3,9 +3,9 @@ package com.eduhive.Edu_Hive.extensions
 import com.eduhive.Edu_Hive.dto.CourseDTO
 import com.eduhive.Edu_Hive.entity.CourseEntity
 import com.eduhive.Edu_Hive.entity.CreatorEntity
-import com.eduhive.Edu_Hive.entity.Customer
+import com.eduhive.Edu_Hive.entity.CustomerEntity
 
-fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity, customerEntities: List<Customer>): CourseEntity =
+fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity, customerEntities: List<CustomerEntity>): CourseEntity =
     CourseEntity(
         id = null,
         title = this.title,
