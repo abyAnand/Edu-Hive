@@ -1,68 +1,63 @@
 package com.eduhive.Edu_Hive.config
 
 
-import com.eduhive.Edu_Hive.utility.JWTUtility
+import com.eduhive.Edu_Hive.repository.UserRepository
+import com.eduhive.Edu_Hive.service.userDetails.UserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.DefaultSecurityFilterChain
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-@EnableWebSecurity
-class SecurityConfig(
-    private val jwtUtility: JWTUtility,
-    private val userDetails: com.eduhive.Edu_Hive.service.userDetails.UserDetailsService,
-    private val userDetailsService: UserDetailsService
-) {
-
-    private fun authManager(http: HttpSecurity): AuthenticationManager {
-        val authenticationManagerBuilder = http.getSharedObject(
-            AuthenticationManagerBuilder::class.java
-        )
-        authenticationManagerBuilder.userDetailsService(userDetailsService)
-        return authenticationManagerBuilder.build()
-    }
+class SecurityConfig {
+    @Bean
+    fun userDetailsService(userRepository: UserRepository): UserDetailsService =
+        UserDetailsService(userRepository)
 
     @Bean
-    open fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager =
+        config.authenticationManager
 
     @Bean
-    open fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        val authenticationManager = authManager(http)
+    fun authenticationProvider(userRepository: UserRepository): AuthenticationProvider =
+        DaoAuthenticationProvider()
+            .also {
+                it.setUserDetailsService(userDetailsService(userRepository))
+                it.setPasswordEncoder(passwordEncoder())
+            }
 
+    @Bean
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtAuthenticationFilter: JwtAuthorizationFilter,
+        authenticationProvider: AuthenticationProvider
+    ): DefaultSecurityFilterChain {
         http
-            .authenticationManager(authenticationManager)
-            .addFilter(JwtAuthenticationFilter(jwtUtility, authenticationManager))
-            .addFilter(JwtAuthorizationFilter(jwtUtility, userDetailsService, authenticationManager))
-            .sessionManagement { sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            }
             .csrf { it.disable() }
-            .headers { headers ->
-                headers.frameOptions { frameOptions ->
-                    frameOptions.disable()
-                }
-            }
             .authorizeHttpRequests {
-                it.requestMatchers("/h2-console/**").permitAll()
+                it
+                    .requestMatchers("/v1/auth/**", "/v1/auth/refresh", "/h2-console")
+                    .permitAll()
+                    .anyRequest()
+                    .fullyAuthenticated()
             }
-            .authorizeHttpRequests {
-                auth -> auth.anyRequest().permitAll()
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
-
-
-//            .authorizeHttpRequests { auth ->
-//                auth.requestMatchers("/v1/auth/signup").permitAll()
-//                    .anyRequest().authenticated()
-//            }
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

@@ -5,6 +5,7 @@ import com.eduhive.Edu_Hive.repository.UserRepository
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import java.util.Collections
 
@@ -13,16 +14,20 @@ class UserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsService {
 
-    override fun loadUserByUsername(email: String): UserDetails {
-        val user = userRepository.findByEmail(email).orElseThrow{ Exception("User not found")}
-        user.id?.let {
-            return UserSecurity(
-                it,
-                user.email,
-                user.password,
-                Collections.singleton(user.role.getAuthority())
-            )
-        } ?: run {
-            throw Exception("user Not Found")}
+    override fun loadUserByUsername(username: String): UserDetails {
+        val user = userRepository.findByEmail(username)
+            .orElseThrow { UsernameNotFoundException("User $username not found!") }
+
+        return UserSecurity(
+            id = user.id!!,
+            email = user.email,
+            userPassword = user.password,
+            userAuthorities = mutableListOf(user.role.getAuthority())
+        )
+
+
     }
+
+
+
 }

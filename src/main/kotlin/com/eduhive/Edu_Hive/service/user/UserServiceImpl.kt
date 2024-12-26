@@ -9,15 +9,15 @@ import com.eduhive.Edu_Hive.repository.CreatorRepository
 import com.eduhive.Edu_Hive.repository.CustomerRepository
 import com.eduhive.Edu_Hive.repository.UserRepository
 import org.springframework.http.HttpStatus
-import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
-    val passwordEncoder : BCryptPasswordEncoder,
+    private val passwordEncoder: PasswordEncoder,
     private val creatorRepository: CreatorRepository,
     private val customerRepository: CustomerRepository
 ) : UserService<Any> {
