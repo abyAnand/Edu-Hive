@@ -1,5 +1,6 @@
 package com.eduhive.Edu_Hive.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -23,8 +24,9 @@ class CourseEntity(
     @Column(name = "price")
     val price: Double,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
+    @JsonIgnore
     val creator: CreatorEntity,
 
     @ManyToMany
@@ -33,7 +35,7 @@ class CourseEntity(
         joinColumns = [JoinColumn(name = "course_id")],
         inverseJoinColumns = [JoinColumn(name = "customer_id")]
     )
-    val customers: List<CustomerEntity> = emptyList(),
+    val customers: MutableList<CustomerEntity> = mutableListOf(),
 
     @CreationTimestamp
     @Column(name = "created_date", updatable = false)

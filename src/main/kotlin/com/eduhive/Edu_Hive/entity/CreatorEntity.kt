@@ -1,6 +1,7 @@
 package com.eduhive.Edu_Hive.entity
 
 import com.eduhive.Edu_Hive.enums.Role
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -29,6 +30,7 @@ open class CreatorEntity(
     val updatedDate: LocalDateTime? = null,
 
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
+    @JsonIgnore
     val courses: List<CourseEntity> = emptyList()
 )

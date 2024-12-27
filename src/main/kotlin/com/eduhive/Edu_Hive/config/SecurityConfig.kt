@@ -49,16 +49,12 @@ class SecurityConfig {
         authenticationProvider: AuthenticationProvider
     ): DefaultSecurityFilterChain {
         http
+
             .csrf { csrf ->
-                csrf.ignoringRequestMatchers(toH2Console())
+                csrf.ignoringRequestMatchers(toH2Console())  // Ensuring H2 console URL is not subject to CSRF
                     .disable()
             }
-            .authorizeHttpRequests { auth ->
-                auth.requestMatchers(toH2Console()).permitAll()
-            }
-//            .headers { headers ->
-//                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-//            }
+
             .authorizeHttpRequests {
                 it.requestMatchers("/h2-console/**").permitAll()
             }
@@ -75,6 +71,9 @@ class SecurityConfig {
             }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .headers {
+                it.frameOptions { frame -> frame.sameOrigin() }
+            }
         return http.build()
     }
 

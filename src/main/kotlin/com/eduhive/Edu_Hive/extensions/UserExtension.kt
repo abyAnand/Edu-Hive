@@ -50,5 +50,5 @@ fun UserEntity.toCustomerEntity(): CustomerEntity =
         id = this.id,
         name = this.name,
         email = this.email,
-        courses =  emptyList()
+        courses =  mutableListOf()
     )

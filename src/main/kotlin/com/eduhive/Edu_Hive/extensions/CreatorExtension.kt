@@ -6,6 +6,7 @@ import com.eduhive.Edu_Hive.dto.CreatorDto
 import com.eduhive.Edu_Hive.dto.SignUpDto
 import com.eduhive.Edu_Hive.entity.CreatorEntity
 import com.eduhive.Edu_Hive.entity.UserEntity
+import org.hibernate.Hibernate
 
 fun CreatorDto.toCreatorEntity(creator: CreatorEntity) =
     CreatorEntity(
@@ -37,12 +38,22 @@ fun CreatorDto.toCreatorEntity() =
 //)
 
 
-fun CreatorEntity.toCreatorDto() =
-    CreatorDto(
+fun CreatorEntity.toCreatorDto(): CreatorDto {
+
+    return CreatorDto(
         id = this.id,
         name = this.name,
         email = this.email,
-        courses = emptyList()
-//        role = this.role,
-//        courses = this.courses.map { it.toCourseDTO()}
+        courses = this.courses.map { it.toCourseDTO() } // Now this will not trigger lazy loading errors
     )
+}
+
+fun CreatorEntity.toCreatorDtoWithoutCourses(): CreatorDto {
+
+    return CreatorDto(
+        id = this.id,
+        name = this.name,
+        email = this.email,
+        courses = mutableListOf()
+    )
+}

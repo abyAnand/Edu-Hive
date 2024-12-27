@@ -4,6 +4,7 @@ package com.eduhive.Edu_Hive.controller
 
 import com.eduhive.Edu_Hive.dto.CourseDTO
 import com.eduhive.Edu_Hive.dto.CreatorDto
+import com.eduhive.Edu_Hive.dto.CreatorStats
 import com.eduhive.Edu_Hive.entity.UserSecurity
 import com.eduhive.Edu_Hive.repository.CourseRepository
 import com.eduhive.Edu_Hive.service.course.CourseService
@@ -36,6 +37,7 @@ class CreatorController(
     fun createCourse(
         @RequestBody @Valid courseDto: CourseDTO,
         @AuthenticationPrincipal user : UserSecurity): ResponseEntity<CourseDTO>{
+
         val savedCourse = courseService.save(courseDto,user.email)
         return ResponseEntity(savedCourse, HttpStatus.CREATED)
     }
@@ -46,5 +48,11 @@ class CreatorController(
         @AuthenticationPrincipal user : UserSecurity): ResponseEntity<List<CourseDTO>>{
         val courseList = courseService.getAllCourses(user.email)
         return ResponseEntity(courseList, HttpStatus.OK)
+    }
+
+    @GetMapping("/stats")
+    fun getCreatorStats(@AuthenticationPrincipal user : UserSecurity): CreatorStats {
+        var creator = creatorService.findByEmail(user.email)
+        return creatorService.getCreatorStats(creator)
     }
 }

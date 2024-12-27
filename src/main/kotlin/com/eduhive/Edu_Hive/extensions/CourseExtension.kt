@@ -12,8 +12,10 @@ fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity, customerEntities: Lis
         description = this.description,
         price = this.price,
         creator = creatorEntity,
-        customers = customerEntities
+        customers = customerEntities.toMutableList()
     )
+
+
 
 fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity): CourseEntity =
     CourseEntity(
@@ -22,7 +24,18 @@ fun CourseDTO.toCourseEntity(creatorEntity: CreatorEntity): CourseEntity =
         description = this.description,
         price = this.price,
         creator = creatorEntity,
-        customers = emptyList()
+        customers = mutableListOf()
+    )
+
+fun CourseDTO.toCourseEntityPopulated(creatorEntity: CreatorEntity): CourseEntity =
+    CourseEntity(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        price = this.price,
+        creator = creatorEntity,
+        customers = this.customers?.map { it.toCustomerEntity() }?.toMutableList() ?: mutableListOf()
+
     )
 
 fun CourseDTO.toCourseEntity(courseEntity: CourseEntity): CourseEntity =
@@ -41,7 +54,30 @@ fun CourseEntity.toCourseDTO(): CourseDTO =
         title = this.title,
         description = this.description,
         price = this.price,
-        creator = this.creator.toCreatorDto(), // Assuming CreatorEntity has a `toCreatorDto` method
-        customers = emptyList() // TODO: Map customers properly when the `toCustomerDTO` method is available
+        creator = this.creator.toCreatorDtoWithoutCourses(), // Assuming CreatorEntity has a `toCreatorDto` method
+        customers = this.customers.toList().map { it.toCustomerDto() }
     )
+
+fun CourseEntity.toCourseDTOWithoutCustomers(): CourseDTO =
+    CourseDTO(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        price = this.price,
+        creator = this.creator.toCreatorDtoWithoutCourses(), // Assuming CreatorEntity has a `toCreatorDto` method
+        customers = emptyList()
+    )
+
+
+fun CourseEntity.toCourseDto(courseEntity: CourseEntity): CourseDTO =
+    CourseDTO(
+        id = courseEntity.id,
+        title = this.title,
+        description = this.description,
+        price = this.price,
+        creator = courseEntity.creator.toCreatorDto(),
+        customers = courseEntity.customers.map { it.toCustomerDto() }
+    )
+
+
 

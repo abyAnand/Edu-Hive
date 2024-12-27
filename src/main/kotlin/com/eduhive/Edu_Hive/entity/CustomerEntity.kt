@@ -27,6 +27,18 @@ class CustomerEntity(
     @Column(name = "updated_date")
     val updatedDate: LocalDateTime? = null,
 
-    @ManyToMany(mappedBy = "customers")
-    val courses: List<CourseEntity> = emptyList()
-)
+    @ManyToMany
+    @JoinTable(
+        name = "customer_course",
+        joinColumns = [JoinColumn(name = "customer_id")],
+        inverseJoinColumns = [JoinColumn(name = "course_id")]
+    )
+    val courses: MutableList<CourseEntity> = mutableListOf()
+){
+    fun addCourse(course: CourseEntity) {
+        if (!this.courses.contains(course)) {
+            this.courses.add(course)
+            course.customers.add(this)
+        }
+    }
+}
