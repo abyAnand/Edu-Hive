@@ -2,6 +2,7 @@ package com.eduhive.Edu_Hive.controller
 
 import com.eduhive.Edu_Hive.dto.CourseStats
 import com.eduhive.Edu_Hive.dto.CreatorStats
+import com.eduhive.Edu_Hive.dto.StatsResponse
 import com.eduhive.Edu_Hive.entity.UserEntity
 import com.eduhive.Edu_Hive.enums.Role
 import com.eduhive.Edu_Hive.service.course.CourseService
@@ -36,10 +37,10 @@ class AdminController(
     fun getStats(
         @RequestParam(required = false) startDate: LocalDateTime? = null,
         @RequestParam(required = false) endDate: LocalDateTime? = null
-    ): ResponseEntity<List<CreatorStats>> {
+    ): ResponseEntity<StatsResponse> {
 
 
-        val stats = creatorService.getCreatorStats(startDate, endDate)
+        val stats = creatorService.getStats(startDate, endDate)
         return ResponseEntity.ok(stats)
     }
 }

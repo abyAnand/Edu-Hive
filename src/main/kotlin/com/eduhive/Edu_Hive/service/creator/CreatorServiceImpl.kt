@@ -105,7 +105,7 @@ class CreatorServiceImpl(
         }
     }
 
-    fun getStats(startDate: LocalDateTime?, endDate: LocalDateTime?): StatsResponse {
+    override fun getStats(startDate: LocalDateTime?, endDate: LocalDateTime?): StatsResponse {
         val creatorStats = getCreatorStats(startDate, endDate)
         val customerStats = getCustomerStats()
 

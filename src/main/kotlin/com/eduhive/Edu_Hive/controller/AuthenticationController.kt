@@ -3,6 +3,7 @@ package com.eduhive.Edu_Hive.controller
 
 
 import com.eduhive.Edu_Hive.dto.*
+import com.eduhive.Edu_Hive.exceptions.InvalidCredentialsException
 import com.eduhive.Edu_Hive.service.creator.CreatorService
 import com.eduhive.Edu_Hive.service.user.UserService
 import com.eduhive.Edu_Hive.utility.AuthenticationService
@@ -26,11 +27,15 @@ class AuthenticationController(
         return ResponseEntity(savedCreator, HttpStatus.CREATED)
     }
 
-    @PostMapping(path = ["/login"])
-    fun authenticate(
-        @RequestBody authRequest: LoginDto
-    ): AuthenticationResponse =
-        authenticationService.authentication(authRequest)
+        @PostMapping("/login")
+        fun login(@RequestBody authRequest: LoginDto): ResponseEntity<AuthenticationResponse> {
+            return try {
+                val authResponse = authenticationService.authentication(authRequest)
+                ResponseEntity.ok(authResponse)
+            } catch (ex: InvalidCredentialsException) {
+               throw ex
+            }
+        }
 
     @PostMapping("/refresh")
     fun refreshAccessToken(

@@ -8,11 +8,13 @@ import com.eduhive.Edu_Hive.service.userDetails.UserDetailsService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationServiceException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
 
 import org.springframework.stereotype.Service
 import java.util.Date
+import javax.naming.AuthenticationException
 
 @Service
 class AuthenticationService(
@@ -24,12 +26,16 @@ class AuthenticationService(
     @Value("\${application.security.jwt.refresh-token.expiration}") private val refreshTokenExpiration: Long = 0
 ) {
     fun authentication(authenticationRequest: LoginDto): AuthenticationResponse {
-        authManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                authenticationRequest.email,
-                authenticationRequest.password
+        try {
+            authManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    authenticationRequest.email,
+                    authenticationRequest.password
+                )
             )
-        )
+        } catch (e: AuthenticationException) {
+            throw BadCredentialsException("Email or password is incorrect")
+        }
 
         val user = userDetailsService.loadUserByUsername(authenticationRequest.email)
 
