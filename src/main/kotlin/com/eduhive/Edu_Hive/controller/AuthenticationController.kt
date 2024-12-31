@@ -21,7 +21,7 @@ class AuthenticationController(
     private val userService: UserService<Any>,
     private val authenticationService: AuthenticationService) {
 
-    @PostMapping(path = ["/signup"])
+    @PostMapping("signup")
     fun createCreator(@Valid @RequestBody signUpDto: SignUpDto): ResponseEntity<Any> {
         val savedCreator = userService.save(signUpDto)
         return ResponseEntity(savedCreator, HttpStatus.CREATED)

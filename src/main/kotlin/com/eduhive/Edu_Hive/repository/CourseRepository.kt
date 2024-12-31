@@ -14,6 +14,7 @@ interface CourseRepository: JpaRepository<CourseEntity, Long> {
     fun findByCreatorIdAndCreatedDateBetween(id: Long, startDate: LocalDateTime, endDate: LocalDateTime): List<CourseEntity>
 
     fun findAllByTitleContainingOrDescriptionContaining(title: String, description: String): List<CourseEntity>
+    fun findAllByTitleContainingOrDescriptionContainingIgnoreCase(title: String, description: String): List<CourseEntity>
 
     fun findByCreatorId(id: Long): List<CourseEntity>
 

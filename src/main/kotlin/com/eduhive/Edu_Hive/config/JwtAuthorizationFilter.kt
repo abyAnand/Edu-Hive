@@ -22,6 +22,7 @@ class JwtAuthorizationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+
         val authorizationHeader: String? = request.getHeader("Authorization")
 
         if (null != authorizationHeader && authorizationHeader.startsWith("Bearer ")) {

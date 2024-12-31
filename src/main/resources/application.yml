@@ -35,3 +35,10 @@ application:
       refresh-token:
         expiration: 604800000 # 7 days
 
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+

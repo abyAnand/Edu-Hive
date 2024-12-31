@@ -6,22 +6,18 @@ import com.eduhive.Edu_Hive.service.userDetails.UserDetailsService
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.config.annotation.web.builders.HttpSecurity.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig
-import org.springframework.security.web.authentication.AuthenticationFailureHandler
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -38,11 +34,10 @@ class SecurityConfig {
 
     @Bean
     fun authenticationProvider(userRepository: UserRepository): AuthenticationProvider =
-        DaoAuthenticationProvider()
-            .also {
-                it.setUserDetailsService(userDetailsService(userRepository))
-                it.setPasswordEncoder(passwordEncoder())
-            }
+        DaoAuthenticationProvider().apply {
+            setUserDetailsService(userDetailsService(userRepository))
+            setPasswordEncoder(passwordEncoder())
+        }
 
     @Bean
     fun securityFilterChain(
@@ -51,36 +46,57 @@ class SecurityConfig {
         authenticationProvider: AuthenticationProvider
     ): DefaultSecurityFilterChain {
         http
-
             .csrf { csrf ->
-                csrf.ignoringRequestMatchers(toH2Console())  // Ensuring H2 console URL is not subject to CSRF
+                csrf.ignoringRequestMatchers(toH2Console()) // Disable CSRF for H2 Console
                     .disable()
             }
-
-            .authorizeHttpRequests {
-                it.requestMatchers("/h2-console/**").permitAll()
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers(
+                        "/v1/auth/signup", // Permit access to /v1/auth/signup
+                        "/v1/auth/**", // Permit other /v1/auth endpoints if necessary
+                        "/h2-console/**" // Permit access to H2 console
+                    ).permitAll()
+                    .anyRequest().authenticated() // Secure all other endpoints
             }
-            .authorizeHttpRequests {
-                it
-                    .requestMatchers("/v1/auth/**", "/v1/auth/refresh")
-                    .permitAll()
-                    .anyRequest()
-                    .fullyAuthenticated()
-            }
+            .exceptionHandling { handling ->
+                handling
+                    .authenticationEntryPoint { _, response, exception ->
+                        response.contentType = "application/json"
+                        response.characterEncoding = "UTF-8"
 
+                        when (response.status) {
+                            HttpStatus.CONFLICT.value() -> {
+                                response.status = HttpStatus.CONFLICT.value()
+                                val errorMessage = """{ "error": "Resource already exists in the database" }"""
+                                response.writer.write(errorMessage)
+                            }
+                            else -> {
+                                response.status = HttpStatus.UNAUTHORIZED.value() // Default to 401 if not explicitly set
+                                val errorMessage = """{ "error": "${exception.message ?: "Unauthorized access"}" }"""
+                                response.writer.write(errorMessage)
+                            }
+                        }
+                    }
+                    .accessDeniedHandler { _, response, _ ->
+                        response.status = HttpStatus.FORBIDDEN.value()
+                        response.contentType = "application/json"
+                        response.characterEncoding = "UTF-8"
+                        val errorMessage = """{ "error": "Forbidden" }"""
+                        response.writer.write(errorMessage)
+                    }
+            }
             .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless sessions for JWT
             }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .headers {
-                it.frameOptions { frame -> frame.sameOrigin() }
+            .headers { headers ->
+                headers.frameOptions().sameOrigin() // Allow H2 console
             }
         return http.build()
     }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-
-
 }

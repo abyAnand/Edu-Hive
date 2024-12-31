@@ -87,7 +87,7 @@ class CourseServiceImpl(
     }
 
     override fun searchCourse(seachQuery: String): List<CourseDTO> {
-        val courseList =  courseRepository.findAllByTitleContainingOrDescriptionContaining(seachQuery, seachQuery)
+        val courseList =  courseRepository.findAllByTitleContainingOrDescriptionContainingIgnoreCase(seachQuery, seachQuery)
         return courseList.map { it.toCourseDTO() }
     }
 }
