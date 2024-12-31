@@ -91,9 +91,7 @@ class SecurityConfig {
             }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .headers { headers ->
-                headers.frameOptions().sameOrigin() // Allow H2 console
-            }
+
         return http.build()
     }
 
